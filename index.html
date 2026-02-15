@@ -1,165 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UMBC Linux Users Group Mirror</title>
-    <style>
-        :root {
-        --umbc-gold: #fdb515;
-        --umbc-black: #000000;
-        --umbc-gray: #c7c8ca;
-        --umbc-text: #222;
-        }
 
-        body {
-        font-family: "Segoe UI", Roboto, sans-serif;
-        background-color: var(--umbc-gray);
-        color: var(--umbc-text);
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        font-family: "Inter", sans-serif;
-        font-optical-sizing: auto;
-        font-style: normal;
-        }
-
-        header {
-        background: var(--umbc-black);
-        color: white;
-        padding: 0.5rem 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        border-bottom: 4px solid var(--umbc-gold);
-        gap: 1rem;
-        font-family: "Inter", sans-serif;
-        }
-
-        header img {
-        height: 150px;
-        width: 150px;
-        }
-
-        header h1 {
-        margin: 0;
-        font-size: 1.6rem;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        }
-
-        main {
-        flex-grow: 1;
-        max-width: 1000px;
-        margin: 2rem auto;
-        background: white;
-        border-radius: 10px;
-        padding: 2rem;
-        padding-top: 1rem;
-        padding-bottom: 0rem;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-        border-bottom: 3px solid var(--umbc-gold);
-        padding-bottom: 0.4rem;
-        color: var(--umbc-black);
-        font-size: x-large;
-        }
-
-        .subtext {
-        font-size: 0.95rem;
-        color: #555;
-        font-size: larger;
-        }
-
-        .mirror-list {
-        margin-top: 1.5rem;
-        }
-
-        .mirror-list a {
-        display: block;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #eee;
-        color: var(--umbc-black);
-        font-weight: 500;
-        text-decoration: none;
-        font-size: large;
-        }
-
-        .mirror-list a:hover {
-        background-color: #fafafa;
-        color: var(--umbc-gold);
-        }
-
-        footer {
-        background: var(--umbc-black);
-        color: white;
-        text-align: center;
-        padding: 1rem 0;
-        font-size: 0.9rem;
-        border-top: 3px solid var(--umbc-gold);
-        }
-
-        a {
-        color: var(--umbc-black);
-        text-decoration: none;
-        }
-
-        a:hover {
-        color: var(--umbc-gold);
-        }
-    </style>
+    <link rel="icon" type="image/x-icon" href="LUG-Icon.png">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="header">
+        <div class="header-inner">
+            <img src="LUG-Icon.png" alt="UMBC LUG Logo">
+            <div class="header-title">
+                <h1><i>UMBC</i> <br> Linux Users Group Mirror</h1>
+            </div>
+        </div>
+    </div>
 
-    <header>
-        <img src="LUG-Icon.png" alt="UMBC LUG Logo">
-        <h1>UMBC Linux Users Group Mirror</h1>
-    </header>
-
-    <main>
+    <div class="content">
         <h2>Available Repositories</h2>
         <p class="subtext">
-        Welcome to the <strong>UMBC LUG Mirror</strong>. We provide local mirrors for popular Linux distributions to support faster access for UMBC and the surrounding community.
+            Welcome to the <strong>UMBC LUG Mirror</strong>. We provide local mirrors for popular Linux distributions to support faster access for UMBC and the surrounding community.
         </p>
-
-        <div class="mirror-list">
-        <a href="archlinux/">Arch Linux</a>
-        <a href="debian/">Debian</a>
-        <a href="endeavouros/">EndeavourOS</a>
-        <!--<a href="kali/">Kali Linux</a>
-        <a href="kali-images/">Kali Images</a> -->
-        <a href="manjaro/">Manjaro</a>
-        <a href="mint/">Linux Mint</a>
-        <a href="puppylinux/">Puppy Linux</a>
-        <a href="ubuntu/">Ubuntu</a>
-        <a href="ubuntu-releases/">Ubuntu Releases</a>
-        </div>
-
-        <p class="subtext" style="margin-top:1.5rem;">
-        Mirror syncs automatically throughout the day.<br>
-        Maintained by the <a href="https://lug.umbc.edu" target="_blank">UMBC Linux Users Group</a>.
-        </p>
-
-    </main>
+        <div class="mirror-list"></div>
+    </div>
 
     <footer>
+        <p class="subtext">
+            Mirror syncs automatically throughout the day.<br>
+            Maintained by the <a href="https://lug.umbc.edu" target="_blank">UMBC Linux Users Group</a>.
+        </p>
+        <br>
         <p>&copy; <span id="current-year"></span> UMBC Linux Users Group.</p>
     </footer>
-    
-    
-    
-    <script>
-        document.getElementById("current-year").textContent = new Date().getFullYear();
-    </script>
-
 </body>
+<script>
+document.getElementById("current-year").textContent = new Date().getFullYear();
+
+const distros = [
+    {
+        name: "Arch Linux",
+        url: "archlinux/",
+        about: "With a focus on advanced users who pefer complete control over every installed package, Arch is a great choice for users who enjoy debugging a broken system instead of doing real work."
+    },
+    {
+        name: "Debian",
+        url: "debian/",
+        about: "Known for its stability and widespread support, Debian is a good choice for servers or users who prefer reliability."
+    },
+    {
+        name: "EndeavourOS",
+        url: "endeavouros/",
+        about: "Based on Arch, EndeavourOS makes opinionated choices that make Arch accessible to those less technically talented, giving them access to the exclusive \"I use Arch btw\" club."
+    },
+    {
+        name: "Manjaro",
+        url: "manjaro/",
+        about: "Manjaro is a great choice if you want Arch packages but more broken, with all the care of an organization who doesn't bother to update their SSL certificates."
+    },
+    {
+        name: "Linux Mint",
+        url: "mint/",
+        about: "Based on Ubuntu, Linux Mint provides many of the benefits of its parent distribution as well as additional support from a strong community. It's basically Ubuntu Cinnamon without Snaps."
+    },
+    {
+        name: "Puppy Linux",
+        url: "puppylinux/",
+        about: "Built to run with very minimal resources, Puppy Linux is ideal for users who want to save RAM to spend on Chromium tabs."
+    },
+    {
+        name: "Ubuntu",
+        url: "ubuntu/",
+        about: "A solid choice for anyone who wants a stable, secure, resonably up to date, and well supported distribution, Ubuntu provides a user experience surpassed only by Fedora."
+    },
+    {
+        name: "Ubuntu Releases",
+        url: "ubuntu-releases/",
+        about: "The latest non-LTS update of Ubuntu, for those who prefer more recent packages."
+    }
+];
+
+function createMirrorLink(distro) {
+    const element = document.createElement("div");
+    element.innerHTML = `
+    <div onclick="window.location.href='${distro.url}'" class="distro-item">
+        <div class="distro-icon">
+            <img src="distro-icons/${distro.url.split('/')[0]}.svg" alt="${distro.name} Icon">
+        </div>
+        <h3>${distro.name}</h3>
+        <p>${distro.about}</p>
+    </div>
+    `;
+    const link = document.createElement("a");
+    link.href = distro.url;
+    link.textContent = distro.name;
+    return element;
+}
+const mirrorList = document.querySelector(".mirror-list");
+distros.forEach(distro => {
+    const link = createMirrorLink(distro);
+    mirrorList.appendChild(link);
+});
+</script>
 </html>
