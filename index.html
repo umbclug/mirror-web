@@ -46,7 +46,7 @@ const distros = [
     {
         name: "Arch Linux",
         url: "archlinux/",
-        about: "With a focus on advanced users who pefer complete control over every installed package, Arch is a great choice for users who enjoy debugging a broken system instead of doing work."
+        about: "With a focus on advanced users who prefer complete control over every installed package, Arch is a great choice for users who enjoy debugging a broken system instead of doing work."
     },
     {
         name: "Debian",
@@ -76,12 +76,24 @@ const distros = [
     {
         name: "Ubuntu",
         url: "ubuntu/",
-        about: "A solid choice for anyone who wants a stable, secure, resonably up to date, and well supported distribution, Ubuntu provides a user experience surpassed only by Fedora."
+        about: "A solid choice for anyone who wants a stable, secure, reasonably up to date, and well supported distribution, Ubuntu provides a user experience surpassed only by Fedora."
     },
     {
         name: "Ubuntu Releases",
         url: "ubuntu-releases/",
         about: "The latest non-LTS update of Ubuntu, for those who prefer more recent packages."
+    },
+    {
+        name: "EasyOS",
+        url: "easyos/",
+        about: "A quirky experimental distro from the creator of Puppy Linux, EasyOS focuses on containers, isolation, and runs entirely in RAM.",
+        iconExt: "png"
+    },
+    {
+        name: "Fatdog",
+        url: "fatdog/",
+        about: "A \'fatter\' derivative of puppylinux yet still a surprisingly powerful distro built for efficiency",
+        iconExt: "png"
     }
 ];
 
@@ -90,7 +102,7 @@ function createMirrorLink(distro) {
     element.innerHTML = `
     <div onclick="window.location.href='${distro.url}'" class="distro-item">
         <div class="distro-icon">
-            <img src="distro-icons/${distro.url.split('/')[0]}.svg" alt="${distro.name} Icon">
+            <img src="distro-icons/${distro.url.split('/')[0]}.${distro.iconExt || 'svg'}" alt="${distro.name} Icon">
         </div>
         <h3>${distro.name}</h3>
         <p>${distro.about}</p>
