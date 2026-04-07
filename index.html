@@ -11,6 +11,30 @@
 
     <link rel="icon" type="image/x-icon" href="LUG-Icon.png">
     <link rel="stylesheet" href="styles.css">
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .distro-index {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .distro-index a {
+            text-decoration: none;
+            color: inherit;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+
+        .distro-index a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <div class="header">
@@ -92,15 +116,19 @@ const distros = [
     {
         name: "Fatdog",
         url: "fatdog/",
-        about: "A \'fatter\' derivative of puppylinux yet still a surprisingly powerful distro built for efficiency",
+        about: "A 'fatter' derivative of Puppy Linux yet still a surprisingly powerful distro built for efficiency.",
         iconExt: "png"
     }
 ];
 
 function createMirrorLink(distro) {
+    const id = distro.name.toLowerCase().replace(/\s+/g, '-');
+
     const element = document.createElement("div");
     element.innerHTML = `
-    <div onclick="window.location.href='${distro.url}'" class="distro-item">
+    <div id="${id}" 
+         onclick="window.location.href='${distro.url}'" 
+         class="distro-item">
         <div class="distro-icon">
             <img src="distro-icons/${distro.url.split('/')[0]}.${distro.iconExt || 'svg'}" alt="${distro.name} Icon">
         </div>
@@ -108,12 +136,27 @@ function createMirrorLink(distro) {
         <p>${distro.about}</p>
     </div>
     `;
-    const link = document.createElement("a");
-    link.href = distro.url;
-    link.textContent = distro.name;
     return element;
 }
+
 const mirrorList = document.querySelector(".mirror-list");
+
+// Sort alphabetically
+distros.sort((a, b) => a.name.localeCompare(b.name));
+
+// Create clickable index
+const index = document.createElement("p");
+index.className = "distro-index";
+index.innerHTML = distros
+    .map(d => {
+        const id = d.name.toLowerCase().replace(/\s+/g, '-');
+        return `<a href="#${id}">${d.name}</a>`;
+    })
+    .join(" • ");
+
+document.querySelector(".content").insertBefore(index, mirrorList);
+
+// Render distros
 distros.forEach(distro => {
     const link = createMirrorLink(distro);
     mirrorList.appendChild(link);
