@@ -1,161 +1,122 @@
+// TODO - get new endevour os logo without name, fix footer not always being right at the bottom, fix mint and fatdog sync times issue, add button for latest iso
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUG@UMBC Mirrors</title>
 
     <link rel="icon" type="image/x-icon" href="LUG-Icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="styles.css">
-
-    <style>
-        html {
-            scroll-behavior: smooth;
-        }
-
-        .distro-index {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
-        }
-
-        .distro-index a {
-            text-decoration: none;
-            color: inherit;
-            opacity: 0.8;
-            transition: opacity 0.2s ease;
-        }
-
-        .distro-index a:hover {
-            opacity: 1;
-            text-decoration: underline;
-        }
-    </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-inner">
-            <img src="LUG-Icon.png" alt="UMBC LUG Logo">
-            <div class="header-title">
-                <h1>LUG@UMBC<br>Mirrors</h1>
-            </div>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="/">
+                <img src="LUG-Icon.png" alt="LUG@UMBC logo">
+                <span>LUG@UMBC Mirrors</span>
+            </a>
+            <nav class="site-nav">
+                <a href="https://lug.umbc.edu" target="_blank" rel="noopener">Main Site</a>
+                <a href="report.html">Stats</a>
+                <a href="https://uptime.blahaj.uno/status/lug" target="_blank" rel="noopener">Uptime</a>
+            </nav>
         </div>
-    </div>
+    </header>
 
-    <div class="content">
-        <h2>Available Repositories</h2>
-        <p class="subtext">
-            Welcome to the <strong>UMBC LUG Mirrors</strong>. We provide local mirrors for popular Linux distributions to support faster access for UMBC and the surrounding community.
-        </p>
-        <div class="mirror-list"></div>
-    </div>
+    <main class="container">
+        <section class="intro">
+            <h1>Available Repositories</h1>
+            <p>Local mirrors of popular Linux distributions, for faster access on and around UMBC.</p>
+        </section>
+        <section class="mirror-list" id="mirror-list"></section>
+    </main>
 
-    <footer>
-        <p class="subtext">
-            Mirror syncs automatically throughout the day.<br>
-            Maintained by the <a href="https://lug.umbc.edu" target="_blank">UMBC Linux Users Group</a>.<br>
-            <a href="report.html">View Stats</a>
-        </p>
-        <br>
-        <p>&copy; <span id="current-year"></span> UMBC Linux Users Group.</p>
+    <footer class="site-footer">
+        <div class="container">
+            <p>Mirrors sync automatically throughout the day.</p>
+            <p>Maintained by the <a href="https://lug.umbc.edu" target="_blank" rel="noopener">UMBC Linux Users Group</a>.</p>
+            <p class="muted">&copy; <span id="current-year"></span> UMBC Linux Users Group</p>
+        </div>
     </footer>
+
+    <script>
+        const host = location.hostname || "mirror.lug.umbc.edu";
+
+        // Add or edit distros here. The last-sync time is read from
+        const distros = [
+            { name: "Arch Linux", url: "archlinux/", about: "Rolling-release distribution for users who want full control." },
+            { name: "Debian", url: "debian/", about: "Stable, widely supported distribution popular for servers." },
+            { name: "EndeavourOS", url: "endeavouros/", about: "Arch-based distribution with a friendly installer." },
+            { name: "Linux Mint", url: "mint/", about: "Ubuntu-based distribution with a familiar desktop experience." },
+            { name: "Puppy Linux", url: "puppylinux/", about: "Lightweight distribution for minimal hardware." },
+            { name: "Ubuntu", url: "ubuntu/", about: "Beginner-friendly distribution with strong community support." },
+            { name: "Ubuntu Releases", url: "ubuntu-releases/", about: "CD images for recent Ubuntu releases." },
+            { name: "EasyOS", url: "easyos/", iconExt: "png", about: "Experimental distribution that runs entirely in RAM." },
+            { name: "Fatdog", url: "fatdog/", iconExt: "png", about: "Lightweight 64-bit distribution derived from Puppy Linux." },
+            { name: "CachyOS", url: "cachyos/", about: "Arch-based distribution with a focus on performance." },
+            { name: "Alpine Linux", url: "alpine/", about: "Security-oriented, lightweight distribution for servers and containers." },
+        ];
+
+        function iconFor(distro) {
+            const slug = distro.url.replace(/\/$/, "");
+            return `distro-icons/${slug}.${distro.iconExt || "svg"}`;
+        }
+
+        function parseSyncDate(text) {
+            const match = text.match(/^Date:\s*(.+)$/m);
+            if (!match) return null;
+            const date = new Date(match[1]);https://mirror.lug.umbc.edu/
+            return Number.isNaN(date.getTime()) ? null : date;
+        }
+
+        async function fetchSyncDate(distro) {
+            try {
+                const response = await fetch(`${distro.url}project/trace/${host}`);
+                if (!response.ok) return null;
+                return parseSyncDate(await response.text());
+            } catch {
+                return null;
+            }
+        }
+
+        function formatSync(date) {
+            return date.toLocaleString(undefined, {
+                year: "numeric", month: "short", day: "numeric",
+                hour: "numeric", minute: "2-digit",
+            });
+        }
+
+        const list = document.getElementById("mirror-list");
+
+        distros
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .forEach((distro) => {
+                const row = document.createElement("a");
+                row.className = "mirror-row";
+                row.href = distro.url;
+                row.innerHTML = `
+                    <img class="mirror-icon" src="${iconFor(distro)}" alt="" loading="lazy">
+                    <div class="mirror-main">
+                        <span class="mirror-name">${distro.name}</span>
+                        <span class="mirror-about">${distro.about}</span>
+                    </div>
+                    <span class="mirror-sync"></span>
+                `;
+                list.appendChild(row);
+
+                const syncEl = row.querySelector(".mirror-sync");
+                fetchSyncDate(distro).then((date) => {
+                    if (date) syncEl.textContent = `Last sync: ${formatSync(date)}`;
+                });
+            });
+
+        document.getElementById("current-year").textContent = new Date().getFullYear();
+    </script>
 </body>
-<script>
-document.getElementById("current-year").textContent = new Date().getFullYear();
-
-const distros = [
-    {
-        name: "Arch Linux",
-        url: "archlinux/",
-        about: "With a focus on advanced users who prefer complete control over every installed package, Arch Linux is a rolling release distro that offers the latest software and a highly customizable experience."
-    },
-    {
-        name: "Debian",
-        url: "debian/",
-        about: "Known for its stability and widespread support, Debian is a good choice for servers or users who prefer reliability."
-    },
-    {
-        name: "EndeavourOS",
-        url: "endeavouros/",
-        about: "Based on Arch, EndeavourOS, provides a more user-friendly installation process and a curated selection of desktop environments, making it a great choice for users who want the Arch experience without the initial setup complexity."
-    },
-    {
-        name: "Linux Mint",
-        url: "mint/",
-        about: "Based on Ubuntu, Linux Mint provides many of the benefits of its parent distribution as well as additional support from a strong community. It's basically Ubuntu Cinnamon without Snaps."
-    },
-    {
-        name: "Puppy Linux",
-        url: "puppylinux/",
-        about: "Built to run with very minimal resources, Puppy Linux is ideal for users who want to save RAM to spend on Chromium tabs."
-    },
-    {
-        name: "Ubuntu",
-        url: "ubuntu/",
-        about: "A solid choice for beginners, often serving as the basis for many other distros. Ubuntu's large user base means there's a wealth of documentation and community support available."
-    },
-    {
-        name: "Ubuntu Releases",
-        url: "ubuntu-releases/",
-        about: "A collection of CD images for all recent Ubuntu releases."
-    },
-    {
-        name: "EasyOS",
-        url: "easyos/",
-        about: "A quirky experimental distro from the creator of Puppy Linux, EasyOS focuses on containers, isolation, and runs entirely in RAM.",
-        iconExt: "png"
-    },
-    {
-        name: "Fatdog",
-        url: "fatdog/",
-        about: "A 'fatter' derivative of Puppy Linux yet still a surprisingly powerful distro built for efficiency.",
-        iconExt: "png"
-    }
-];
-
-function createMirrorLink(distro) {
-    const id = distro.name.toLowerCase().replace(/\s+/g, '-');
-
-    const element = document.createElement("div");
-    element.innerHTML = `
-    <div id="${id}" 
-         onclick="window.location.href='${distro.url}'" 
-         class="distro-item">
-        <div class="distro-icon">
-            <img src="distro-icons/${distro.url.split('/')[0]}.${distro.iconExt || 'svg'}" alt="${distro.name} Icon">
-        </div>
-        <h3>${distro.name}</h3>
-        <p>${distro.about}</p>
-    </div>
-    `;
-    return element;
-}
-
-const mirrorList = document.querySelector(".mirror-list");
-
-// Sort alphabetically
-distros.sort((a, b) => a.name.localeCompare(b.name));
-
-// Create clickable index
-const index = document.createElement("p");
-index.className = "distro-index";
-index.innerHTML = distros
-    .map(d => {
-        const id = d.name.toLowerCase().replace(/\s+/g, '-');
-        return `<a href="#${id}">${d.name}</a>`;
-    })
-    .join(" • ");
-
-document.querySelector(".content").insertBefore(index, mirrorList);
-
-// Render distros
-distros.forEach(distro => {
-    const link = createMirrorLink(distro);
-    mirrorList.appendChild(link);
-});
-</script>
 </html>
