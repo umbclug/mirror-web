@@ -1,4 +1,3 @@
-// TODO - get new endevour os logo without name, fix footer not always being right at the bottom, fix mint and fatdog sync times issue, add button for latest iso
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +9,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=VT323&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -86,10 +85,14 @@
         }
 
         function formatSync(date) {
-            return date.toLocaleString(undefined, {
-                year: "numeric", month: "short", day: "numeric",
-                hour: "numeric", minute: "2-digit",
-            });
+            const diffMs = Date.now() - date.getTime();
+            const minutes = Math.floor(diffMs / 60000);
+            if (minutes < 1) return "Last sync: just now";
+            if (minutes < 60) return `Last sync: ${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `Last sync: ${hours} hour${hours === 1 ? "" : "s"} ago`;
+            const days = Math.floor(hours / 24);
+            return `Last sync: ${days} day${days === 1 ? "" : "s"} ago`;
         }
 
         const list = document.getElementById("mirror-list");
