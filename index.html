@@ -48,11 +48,12 @@
         const host = location.hostname || "mirror.lug.umbc.edu";
 
         // Add or edit distros here. The last-sync time is read from
+        // "<url>project/trace/<host>" by default; set "trace" to override.
         const distros = [
             { name: "Arch Linux", url: "archlinux/", about: "Rolling-release distribution for users who want full control." },
             { name: "Debian", url: "debian/", about: "Stable, widely supported distribution popular for servers." },
             { name: "EndeavourOS", url: "endeavouros/", about: "Arch-based distribution with a friendly installer." },
-            { name: "Linux Mint", url: "mint/", about: "Ubuntu-based distribution with a familiar desktop experience." },
+            { name: "Linux Mint", url: "mint/", trace: [`mint/iso/project/trace/${host}`, `mint/packages/project/trace/${host}`], about: "Ubuntu-based distribution with a familiar desktop experience." },
             { name: "Puppy Linux", url: "puppylinux/", about: "Lightweight distribution for minimal hardware." },
             { name: "Ubuntu", url: "ubuntu/", about: "Beginner-friendly distribution with strong community support." },
             { name: "Ubuntu Releases", url: "ubuntu-releases/", about: "CD images for recent Ubuntu releases." },
@@ -71,29 +72,41 @@
         function parseSyncDate(text) {
             const match = text.match(/^Date:\s*(.+)$/m);
             if (!match) return null;
-            const date = new Date(match[1]);https://mirror.lug.umbc.edu/
+            const date = new Date(match[1]);
             return Number.isNaN(date.getTime()) ? null : date;
         }
 
+        function tracePaths(distro) {
+            if (!distro.trace) return [`${distro.url}project/trace/${host}`];
+            return Array.isArray(distro.trace) ? distro.trace : [distro.trace];
+        }
+
         async function fetchSyncDate(distro) {
-            try {
-                const response = await fetch(`${distro.url}project/trace/${host}`);
-                if (!response.ok) return null;
-                return parseSyncDate(await response.text());
-            } catch {
-                return null;
-            }
+            const dates = await Promise.all(
+                tracePaths(distro).map(async (path) => {
+                    try {
+                        const response = await fetch(path);
+                        if (!response.ok) return null;
+                        return parseSyncDate(await response.text());
+                    } catch {
+                        return null;
+                    }
+                })
+            );
+            const valid = dates.filter(Boolean);
+            if (!valid.length) return null;
+            return new Date(Math.max(...valid.map((d) => d.getTime())));
         }
 
         function formatSync(date) {
             const diffMs = Date.now() - date.getTime();
             const minutes = Math.floor(diffMs / 60000);
-            if (minutes < 1) return "Last sync: just now";
-            if (minutes < 60) return `Last sync: ${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+            if (minutes < 1) return "just now";
+            if (minutes < 60) return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
             const hours = Math.floor(minutes / 60);
-            if (hours < 24) return `Last sync: ${hours} hour${hours === 1 ? "" : "s"} ago`;
+            if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
             const days = Math.floor(hours / 24);
-            return `Last sync: ${days} day${days === 1 ? "" : "s"} ago`;
+            return `${days} day${days === 1 ? "" : "s"} ago`;
         }
 
         const list = document.getElementById("mirror-list");
